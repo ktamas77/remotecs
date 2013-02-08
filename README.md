@@ -26,4 +26,4 @@ No need to set up on every developer's machine, just in one central place.
 
 ### Author
 
-Tamas Kalman <ktamas77@gmail.com>
+* Tamas Kalman <ktamas77@gmail.com>
