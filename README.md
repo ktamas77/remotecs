@@ -20,6 +20,10 @@ No need to set up on every developer's machine, just in one central place.
 * Web interface
 * Give points to the developers based on their code cleaniness
 
-References:
+### References:
  
 * PHP CodeSniffer: http://pear.php.net/package/PHP_CodeSniffer/
+
+### Author
+
+Tamas Kalman <ktamas77@gmail.com>
