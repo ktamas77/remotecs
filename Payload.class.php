@@ -13,7 +13,7 @@ Class Payload {
 
     function __construct() {
         $this->payloadPost = isset($_POST['payload']) ? $_POST['payload'] : false;
-        $this->payload = ($this->payloadPost) ? json_decode($payloadPost, true) : false;
+        $this->payload = ($this->payloadPost) ? json_decode($this->payloadPost, true) : false;
         $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
     }
 
