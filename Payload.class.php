@@ -12,13 +12,37 @@ Class Payload {
     var $logDir;
 
     function __construct() {
-        $this->payloadPost = isset($_POST['payload']) ? $_POST['payload'] : false;
-        $this->payload = ($this->payloadPost) ? json_decode($this->payloadPost, true) : false;
         $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
+        $this->loadPayloadFromPost();
+    }
+
+    /**
+     * Loads payload from HTTP Post
+     *
+     * @return void
+     */
+    public function loadPayloadFromPost()
+    {
+        $this->payloadPost = isset($_POST['payload']) ? $_POST['payload'] : false;
+        $this->setPayLoad($this->payloadPost);
+    }
+
+    /**
+     * Loads Payload from Logfile from the log directory
+     * 
+     * @param String $filename Log Filename
+     */
+    public function loadPayloadFromLog($filename) {
+        $this->payloadPost = file_get_contents($this->logDir . DIRECTORY_SEPARATOR . $filename);
+        $this->setPayLoad($this->payloadPost);
     }
 
     public function getPayLoad() {
         return $this->payload;
+    }
+
+    public function setPayLoad($payload) {
+        $this->payload = ($payload) ? json_decode($payload, true) : false;
     }
 
     public function setLogDir($logDir) {
