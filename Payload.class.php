@@ -1,17 +1,19 @@
-<?php 
+<?php
 
 /**
  * GitHUB PayLoad Class Handler
  *
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
-Class Payload {
+Class Payload
+{
 
     var $payloadPost;
     var $payload;
     var $logDir;
 
-    function __construct() {
+    function __construct()
+    {
         $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
         $this->loadPayloadFromPost();
     }
@@ -32,20 +34,24 @@ Class Payload {
      * 
      * @param String $filename Log Filename
      */
-    public function loadPayloadFromLog($filename) {
+    public function loadPayloadFromLog($filename)
+    {
         $this->payloadPost = file_get_contents($this->logDir . DIRECTORY_SEPARATOR . $filename);
         $this->setPayLoad($this->payloadPost);
     }
 
-    public function getPayLoad() {
+    public function getPayLoad()
+    {
         return $this->payload;
     }
 
-    public function setPayLoad($payload) {
+    public function setPayLoad($payload)
+    {
         $this->payload = ($payload) ? json_decode($payload, true) : false;
     }
 
-    public function setLogDir($logDir) {
+    public function setLogDir($logDir)
+    {
         $this->logDir = $logDir;
     }
 
@@ -56,11 +62,13 @@ Class Payload {
      *
      * @return void
      */
-    public function log($logFile = null) {
+    public function log($logFile = null)
+    {
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir);
         }
-        $logFile = $logFile ?: sprintf('post-%s-%s.log', time(), rand(100000, 999999));
+        $logFile = $logFile ? : sprintf('post-%s-%s.log', time(), rand(100000, 999999));
         file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $logFile, $this->payloadPost);
     }
+
 }
