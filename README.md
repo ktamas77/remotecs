@@ -1,4 +1,7 @@
-## Convenient Coding Standards Validation
+RemoteCS
+========
+
+### Convenient Coding Standards Validation
 
 RemoteCS is a remote Coding Standard Validator. Unlike regular CS Validators, it doesn't requires any changes on the client side (no IDE plugin required neither pre-commit-hook setup for GIT).
 No need to set up on every developer's machine, just in one central place.
