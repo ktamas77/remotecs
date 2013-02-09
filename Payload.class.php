@@ -126,7 +126,7 @@ Class Payload
      */
     protected function _checkSyntax($filename)
     {
-        exec('php -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        exec('/usr/bin/php -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
         if (isset($output[0]) && ($this->_startsWith($output[0], 'No syntax errors detected'))) {
             return true;
         }
@@ -143,7 +143,7 @@ Class Payload
      */
     protected function _checkStandards($filename)
     {
-        exec('phpcs --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        exec('/usr/bin/phpcs --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
         if (isset($output[0]) && ($this->_startsWith($output[0], 'Time'))) {
             return true;
         }
