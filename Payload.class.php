@@ -81,6 +81,16 @@ Class Payload
     }
 
     /**
+     * Removes source files
+     */
+    protected function _removeSourceDir()
+    {
+        if (is_dir($this->sourceDir)) {
+            exec ('rm -rf ' . $this->sourceDir);
+        }
+    }
+
+    /**
      * Generates a GIT clone shell command based on the payload
      *
      * @return String $command
@@ -94,4 +104,66 @@ Class Payload
         return $command;
     }
 
+    public function downloadRepository()
+    {
+        $this->_removeSourceDir();
+        exec($this->getGitCommand());
+    }
+
+    /**
+     * Using PHP Lint, check the file's syntax
+     *
+     * @param String $filename Filename to check in source dir
+     * 
+     * @return boolean
+     */
+    protected function _checkSyntax($filename)
+    {
+        exec('php -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        if (isset($output[0]) && ($this->_startsWith($output[0], 'No syntax errors detected'))) {
+            return true;
+        }
+        return $output;
+    }
+
+    protected function _validateFile($filename)
+    {
+        echo $filename . "\n";
+        $syntax = $this->_checkSyntax($filename);
+        if ($syntax !== true) {
+            $problem = Array(
+              'file' => $filename,
+              'type' => 'syntax error',
+              'description' => $syntax
+            );
+            return $problem;
+        }
+        return true;
+    }
+
+    public function validateCommits()
+    {
+        $commit = $this->payload['head_commit'];
+        $committer = $commit['committer'];
+        $mask = array('added', 'modified');
+        $problems = Array();
+        foreach ($mask as $m) {
+            $filelist = $commit[$m];
+            foreach ($filelist as $filename) {
+                $result = $this->_validateFile($filename);
+                if ($result !== true) {
+                    $problems[] = $result;
+                }
+            }
+        }
+        if (count($problems) == 0) {
+            return true;
+        }
+        return $problems;
+    }
+
+    private function _startsWith($haystack, $needle)
+    {
+        return !strncmp($haystack, $needle, strlen($needle));
+    }
 }

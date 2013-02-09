@@ -20,5 +20,9 @@ $payload->loadPayloadFromLog($filename);
 
 $pl = $payload->getPayLoad();
 
-$command = $payload->getGitCommand();
-var_dump($command);
+print_r($pl);
+
+$payload->downloadRepository();
+$problems = $payload->validateCommits();
+
+print_r($problems);
