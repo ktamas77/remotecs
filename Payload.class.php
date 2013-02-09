@@ -3,6 +3,9 @@
 /**
  * GitHUB PayLoad Class Handler
  *
+ * Requires GIT executable
+ * Passwordless SSH Key should be set up on the server
+ *
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
 Class Payload
@@ -11,10 +14,12 @@ Class Payload
     var $payloadPost;
     var $payload;
     var $logDir;
+    var $sourceDir;
 
     function __construct()
     {
         $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
+        $this->setSourceDir(__DIR__ . DIRECTORY_SEPARATOR . 'source');
         $this->loadPayloadFromPost();
     }
 
@@ -45,6 +50,10 @@ Class Payload
         return $this->payload;
     }
 
+    public function setSourceDir($sourceDir) {
+        $this->sourceDir = $sourceDir;
+    }
+
     public function setPayLoad($payload)
     {
         $this->payload = ($payload) ? json_decode($payload, true) : false;
@@ -69,6 +78,20 @@ Class Payload
         }
         $logFile = $logFile ? : sprintf('post-%s-%s.log', time(), rand(100000, 999999));
         file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $logFile, $this->payloadPost);
+    }
+
+    /**
+     * Generates a GIT clone shell command based on the payload
+     *
+     * @return String $command
+     */
+    public function getGitCommand()
+    {
+        $repositoryUrl = $this->payload['repository']['url'];
+        $projectPath = str_replace('https://github.com/', '', $repositoryUrl);
+        $sshPath = 'git@github.com:' . $projectPath;
+        $command = 'git clone ' . $sshPath . ' ' . $this->sourceDir;
+        return $command;
     }
 
 }

@@ -19,10 +19,6 @@ $payload = new Payload();
 $payload->loadPayloadFromLog($filename);
 
 $pl = $payload->getPayLoad();
-$repositoryUrl = $pl['repository']['url'];
 
-print_r($pl);
-
-print_r($repositoryUrl);
-
-echo "\n\n";
+$command = $payload->getGitCommand();
+var_dump($command);
