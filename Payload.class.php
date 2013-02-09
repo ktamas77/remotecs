@@ -163,7 +163,7 @@ Class Payload
         return $output;
     }
 
-    private function debugLog($var, $prefix = '')
+    public function debugLog($var, $prefix = '')
     {
         file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
     }
