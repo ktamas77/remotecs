@@ -108,13 +108,16 @@ Class Payload
         $repositoryUrl = $this->payload['repository']['url'];
         $projectPath = str_replace('https://github.com/', '', $repositoryUrl);
         $sshPath = 'git@github.com:' . $projectPath;
-        $command = 'git clone ' . $sshPath . ' ' . $this->sourceDir;
+        $command = '/usr/bin/git clone ' . $sshPath . ' ' . $this->sourceDir;
         return $command;
     }
 
     public function downloadRepository()
     {
-        exec($this->getGitCommand());
+        $cmd = $this->getGitCommand();
+        exec($cmd, $output);
+        $this->debugLog($cmd);
+        $this->debugLog($output);
     }
 
     /**
@@ -126,7 +129,13 @@ Class Payload
      */
     protected function _checkSyntax($filename)
     {
-        exec('/usr/bin/php -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        $cmd = '/usr/bin/php -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        exec($cmd, $output);
+        $this->debugLog($cmd);
+        $this->debugLog($output);
+        if (empty($output)) {
+            return true;
+        }
         if (isset($output[0]) && ($this->_startsWith($output[0], 'No syntax errors detected'))) {
             return true;
         }
@@ -143,12 +152,20 @@ Class Payload
      */
     protected function _checkStandards($filename)
     {
-        exec('/usr/bin/phpcs --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        $cmd = '/usr/bin/phpcs --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        exec($cmd, $output);
+        $this->debugLog($cmd);
+        $this->debugLog($output);
         if (isset($output[0]) && ($this->_startsWith($output[0], 'Time'))) {
             return true;
         }
         $output = $this->_removeSourceDirFromTextArray($output);
         return $output;
+    }
+
+    private function debugLog($var, $prefix = '')
+    {
+        file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
     }
 
     /**
