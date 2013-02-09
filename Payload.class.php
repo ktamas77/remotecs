@@ -15,11 +15,13 @@ Class Payload
     var $payload;
     var $logDir;
     var $sourceDir;
+    var $standard;
 
     function __construct()
     {
         $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
-        $this->setSourceDir(__DIR__ . DIRECTORY_SEPARATOR . 'source');
+        $this->setSourceDir(__DIR__ . DIRECTORY_SEPARATOR . 'source-' . date('U') . '-' . rand(100000, 999999));
+        $this->setCodingStandard('Zend');
         $this->loadPayloadFromPost();
     }
 
@@ -48,6 +50,11 @@ Class Payload
     public function getPayLoad()
     {
         return $this->payload;
+    }
+
+    public function setCodingStandard($standard)
+    {
+        $this->standard = $standard;
     }
 
     public function setSourceDir($sourceDir) {
@@ -115,7 +122,7 @@ Class Payload
      *
      * @param String $filename Filename to check in source dir
      * 
-     * @return boolean
+     * @return Boolean|Array
      */
     protected function _checkSyntax($filename)
     {
@@ -126,9 +133,22 @@ Class Payload
         return $output;
     }
 
+    /**
+     * Using PHPCS, checking standards
+     * 
+     * @param String $filename Filename
+     *
+     * @return Boolean|Array
+     */
+    protected function _checkStandards($filename)
+    {
+        exec('phpcs --standard=' . $this->standard .' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+    }
+
     protected function _validateFile($filename)
     {
         echo $filename . "\n";
+
         $syntax = $this->_checkSyntax($filename);
         if ($syntax !== true) {
             $problem = Array(
@@ -138,6 +158,9 @@ Class Payload
             );
             return $problem;
         }
+
+        $cs = $this->_checkStandards($filename);
+
         return true;
     }
 
