@@ -1,4 +1,4 @@
-remoteCS 
+RemoteCS
 ========
 
 ### Convenient Coding Standards Validation
