@@ -57,7 +57,8 @@ Class Payload
         $this->standard = $standard;
     }
 
-    public function setSourceDir($sourceDir) {
+    public function setSourceDir($sourceDir)
+    {
         $this->sourceDir = $sourceDir;
     }
 
@@ -93,7 +94,7 @@ Class Payload
     public function removeSourceDir()
     {
         if (is_dir($this->sourceDir)) {
-            exec ('rm -rf ' . $this->sourceDir);
+            exec('rm -rf ' . $this->sourceDir);
         }
     }
 
@@ -142,7 +143,7 @@ Class Payload
      */
     protected function _checkStandards($filename)
     {
-        exec('phpcs --standard=' . $this->standard .' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        exec('phpcs --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
         if (isset($output[0]) && ($this->_startsWith($output[0], 'Time'))) {
             return true;
         }
@@ -157,11 +158,17 @@ Class Payload
      *
      * @return Array
      */
-    protected function _removeSourceDirFromTextArray($textArray) {
+    protected function _removeSourceDirFromTextArray($textArray)
+    {
         foreach ($textArray as &$line) {
             $line = str_replace($this->sourceDir, '', $line);
         }
         return $textArray;
+    }
+
+    public function getCommitId()
+    {
+        return $this->payload['head_commit']['id'];
     }
 
     protected function _validateFile($filename)
@@ -172,9 +179,9 @@ Class Payload
             $syntax = $this->_checkSyntax($filename);
             if ($syntax !== true) {
                 $problem = Array(
-                  'file' => $filename,
-                  'type' => 'syntax error',
-                  'description' => $syntax
+                    'file' => $filename,
+                    'type' => 'syntax error',
+                    'description' => $syntax
                 );
                 return $problem;
             }
@@ -182,9 +189,9 @@ Class Payload
             $cs = $this->_checkStandards($filename);
             if ($cs !== true) {
                 $problem = Array(
-                  'file' => $filename,
-                  'type' => 'coding standards validation',
-                  'description' => $cs
+                    'file' => $filename,
+                    'type' => 'coding standards validation',
+                    'description' => $cs
                 );
                 return $problem;
             }
@@ -228,4 +235,37 @@ Class Payload
     {
         return !strncmp($haystack, $needle, strlen($needle));
     }
+
+    /**
+     * Sends an Email to the Committer with the details
+     *
+     * @param Array $problems Problems
+     *
+     * @return void
+     */
+    public function sendEmail($problems)
+    {
+        $committer = $this->getCommitterDetails();
+        $subject = "Coding Standards information about your Commit #" . $this->getCommitId();
+        $message = 'Hey ' . $committer['name'] . ",\n\n";
+        $message .= "We've found the following coding standards notifications in your recent commit:\n\n";
+        foreach ($problems as $problem) {
+            $message .= 'File: ' . $problem['file'] . "\n";
+            $message .= 'Type: ' . $problem['type'] . "\n\n";
+            foreach ($message['description'] as $line) {
+                $message .= $line . "\n";
+            }
+            $message .= "\n";
+        }
+        echo "Sincerely,\n\nThe Coding Standards Validator Robot";
+
+        $ses = new SimpleEmailService(SES_ACCESS, SES_SECRET);
+        $mail = new SimpleEmailServiceMessage();
+        $mail->addTo($committer['email']);
+        $mail->setFrom(SES_EMAIL);
+        $mail->setSubject($subject);
+        $mail->setMessageFromString($message);
+        $ses->sendEmail($mail);
+    }
+
 }
