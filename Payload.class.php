@@ -252,12 +252,12 @@ Class Payload
         foreach ($problems as $problem) {
             $message .= 'File: ' . $problem['file'] . "\n";
             $message .= 'Type: ' . $problem['type'] . "\n\n";
-            foreach ($message['description'] as $line) {
+            foreach ($problem['description'] as $line) {
                 $message .= $line . "\n";
             }
             $message .= "\n";
         }
-        echo "Sincerely,\n\nThe Coding Standards Validator Robot";
+        $message .= "Sincerely,\n\nThe Coding Standards Validator Robot";
 
         $ses = new SimpleEmailService(SES_ACCESS, SES_SECRET);
         $mail = new SimpleEmailServiceMessage();
