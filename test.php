@@ -7,6 +7,7 @@
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
 require_once 'Payload.class.php';
+require_once '3rdparty.lib/ses.php';
 
 $filename = isset($argv[1]) ? $argv[1] : null;
 
@@ -17,12 +18,10 @@ if (!$filename) {
 
 $payload = new Payload();
 $payload->loadPayloadFromLog($filename);
-
 $pl = $payload->getPayLoad();
-
-print_r($pl);
-
 $payload->downloadRepository();
 $problems = $payload->validateCommits();
+$payload->removeSourceDir();
 
 print_r($problems);
+print_r($payload->getCommitterDetails());

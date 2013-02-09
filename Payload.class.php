@@ -90,7 +90,7 @@ Class Payload
     /**
      * Removes source files
      */
-    protected function _removeSourceDir()
+    public function removeSourceDir()
     {
         if (is_dir($this->sourceDir)) {
             exec ('rm -rf ' . $this->sourceDir);
@@ -113,7 +113,6 @@ Class Payload
 
     public function downloadRepository()
     {
-        $this->_removeSourceDir();
         exec($this->getGitCommand());
     }
 
@@ -130,6 +129,7 @@ Class Payload
         if (isset($output[0]) && ($this->_startsWith($output[0], 'No syntax errors detected'))) {
             return true;
         }
+        $output = $this->_removeSourceDirFromTextArray($output);
         return $output;
     }
 
@@ -143,31 +143,70 @@ Class Payload
     protected function _checkStandards($filename)
     {
         exec('phpcs --standard=' . $this->standard .' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename, $output);
+        if (isset($output[0]) && ($this->_startsWith($output[0], 'Time'))) {
+            return true;
+        }
+        $output = $this->_removeSourceDirFromTextArray($output);
+        return $output;
+    }
+
+    /**
+     * Strips out source dir path from the given Array
+     *
+     * @param Array $textArray Text Array
+     *
+     * @return Array
+     */
+    protected function _removeSourceDirFromTextArray($textArray) {
+        foreach ($textArray as &$line) {
+            $line = str_replace($this->sourceDir, '', $line);
+        }
+        return $textArray;
     }
 
     protected function _validateFile($filename)
     {
-        echo $filename . "\n";
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
 
-        $syntax = $this->_checkSyntax($filename);
-        if ($syntax !== true) {
-            $problem = Array(
-              'file' => $filename,
-              'type' => 'syntax error',
-              'description' => $syntax
-            );
-            return $problem;
+        if ($ext == 'php') {
+            $syntax = $this->_checkSyntax($filename);
+            if ($syntax !== true) {
+                $problem = Array(
+                  'file' => $filename,
+                  'type' => 'syntax error',
+                  'description' => $syntax
+                );
+                return $problem;
+            }
+
+            $cs = $this->_checkStandards($filename);
+            if ($cs !== true) {
+                $problem = Array(
+                  'file' => $filename,
+                  'type' => 'coding standards validation',
+                  'description' => $cs
+                );
+                return $problem;
+            }
         }
 
-        $cs = $this->_checkStandards($filename);
-
         return true;
+    }
+
+    /**
+     * Returns with the details of the committer ['name', 'email']
+     *
+     * @return Array
+     */
+    public function getCommitterDetails()
+    {
+        $committer = $this->payload['head_commit']['committer'];
+        return $committer;
     }
 
     public function validateCommits()
     {
         $commit = $this->payload['head_commit'];
-        $committer = $commit['committer'];
         $mask = array('added', 'modified');
         $problems = Array();
         foreach ($mask as $m) {
