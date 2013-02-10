@@ -8,15 +8,15 @@ No need to set up on every developer's machine, just in one central place.
 
 ## Features:
 
-* RemoteCS is a GitHub WebHook - Activated after each commit
+* ```RemoteCS``` is a ```GitHub WebHook``` - Activated after each commit
 * Scans the newly added and the modified files after each commit (not the entire repository)
-* Currently supports PHP: PHP lint for Syntax Checking and PHPCS for Coding Standards Validation
+* Currently supports ```PHP```: ```PHP lint``` for Syntax Checking and ```PHPCS``` for Coding Standards Validation
 * Sends E-mail to the committer after commits about the results (if there is any result)
 
 ## Future directions:
 
 * Send coding standard validation messages as inline comments into the commit to GitHub
-* Multiple language support (Java, Ruby, Python, etc)
+* Multiple language support (```Java```, ```Ruby```, ```Python```, etc)
 * Give points to the developers based on their code cleaniness & send weekly summary / toplist
 * Web interface
 
