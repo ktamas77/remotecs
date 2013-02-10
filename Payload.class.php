@@ -31,8 +31,10 @@ Class Payload
      */
     function __construct()
     {
-        $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
-        $this->setSourceDir(__DIR__ . DIRECTORY_SEPARATOR . 'source-' . date('U') . '-' . rand(100000, 999999));
+        $masterDir = __DIR__ . DIRECTORY_SEPARATOR;
+        $uniqueSourceId = 'source-' . date('U') . '-' . rand(100000, 999999);
+        $this->setLogDir($masterDir . 'log');
+        $this->setSourceDir($masterDir . $uniqueSourceId);
         $this->setCodingStandard('Zend');
         $this->loadPayloadFromPost();
         $this->setDebug(false);
@@ -57,7 +59,10 @@ Class Payload
      */
     public function loadPayloadFromPost()
     {
-        $this->payloadPost = isset($_POST['payload']) ? $_POST['payload'] : false;
+        $this->payloadPost = false;
+        if (isset($_POST['payload'])) {
+            $this->payLoadPost = $_POST['payload'];
+        }
         $this->setPayLoad($this->payloadPost);
     }
 
@@ -149,8 +154,10 @@ Class Payload
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir);
         }
-        $logFile = $logFile ? : sprintf('post-%s-%s.log', time(), rand(100000, 999999));
-        file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $logFile, $this->payloadPost);
+        $uniqueId = Array(time(), rand(100000, 999999));
+        $logFile = $logFile ? : vsprintf('post-%s-%s.log', $uniqueId);
+        $logFilePath = $this->logDir . DIRECTORY_SEPARATOR . $logFile;
+        file_put_contents($logFilePath, $this->payloadPost);
     }
 
     /**
@@ -175,8 +182,12 @@ Class Payload
     public function getGitCommand()
     {
         $repositoryUrl = $this->payload['repository']['url'];
-        $sshPath = str_replace('https://github.com/', 'git@github.com:', $repositoryUrl);
-        $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' . $sshPath . ' ' . $this->sourceDir;
+        $sshPath = str_replace(
+                'https://github.com/', 
+                'git@github.com:', 
+                $repositoryUrl);
+        $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' . 
+                $sshPath . ' ' . $this->sourceDir;
         return $command;
     }
 
@@ -203,14 +214,16 @@ Class Payload
      */
     protected function _checkSyntax($filename)
     {
-        $cmd = $this::PHP_PATH . ' -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $filePath = $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $cmd = $this::PHP_PATH . ' -l ' . $filePath;
         exec($cmd, $output);
         $this->debugLog($cmd);
         $this->debugLog($output);
         if (empty($output)) {
             return true;
         }
-        if (isset($output[0]) && ($this->_startsWith($output[0], 'No syntax errors detected'))) {
+        $noSyntax = 'No syntax errors detected';
+        if (isset($output[0]) && ($this->_startsWith($output[0], $noSyntax))) {
             return true;
         }
         $output = $this->_removeSourceDirFromTextArray($output);
@@ -226,7 +239,8 @@ Class Payload
      */
     protected function _checkStandards($filename)
     {
-        $cmd = $this::PHPCS_PATH . ' --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $cmd = $this::PHPCS_PATH . ' --standard=' . $this->standard . ' ' . 
+                $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
         exec($cmd, $output);
         $this->debugLog($cmd);
         $this->debugLog($output);
@@ -248,7 +262,8 @@ Class Payload
     public function debugLog($var, $prefix = '')
     {
         if ($this->_debug) {
-            file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
+            file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 
+                    'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
         }
     }
 
@@ -373,9 +388,11 @@ Class Payload
     public function sendEmail($problems)
     {
         $committer = $this->getCommitterDetails();
-        $subject = "Coding Standards information about your Commit #" . $this->getCommitId();
+        $subject = "Coding Standards information about your Commit #" . 
+                $this->getCommitId();
         $message = 'Hey ' . $committer['name'] . ",\n\n";
-        $message .= "We've found the following coding standards notifications in your recent commit:\n\n";
+        $message .= "We've found the following coding standards ";
+        $message .= "notifications in your recent commit:\n\n";
         foreach ($problems as $problem) {
             $message .= 'File: ' . $problem['file'] . "\n";
             $message .= 'Type: ' . $problem['type'] . "\n\n";
