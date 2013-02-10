@@ -5,6 +5,8 @@
  *
  * Requires GIT executable
  * Passwordless SSH Key should be set up on the server
+ * 
+ * Make sure this script has sufficient rights to run git
  *
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
@@ -13,19 +15,39 @@ Class Payload
     const GIT_PATH = '/usr/bin/git';
     const PHP_PATH = '/usr/bin/php';
     const PHPCS_PATH = '/usr/bin/phpcs';
+    const SUDO_PATH = '/usr/bin/sudo';
 
+    protected $_debug;
     var $payloadPost;
     var $payload;
     var $logDir;
     var $sourceDir;
     var $standard;
 
+    /**
+     * Constructor
+     * 
+     * @return void 
+     */
     function __construct()
     {
         $this->setLogDir(__DIR__ . DIRECTORY_SEPARATOR . 'log');
         $this->setSourceDir(__DIR__ . DIRECTORY_SEPARATOR . 'source-' . date('U') . '-' . rand(100000, 999999));
         $this->setCodingStandard('Zend');
         $this->loadPayloadFromPost();
+        $this->setDebug(false);
+    }
+    
+    /**
+     * Debug Functions on/off
+     * 
+     * @param String $debug Debug
+     * 
+     * @return void
+     */
+    public function setDebug($debug)
+    {
+        $this->_debug = $debug;
     }
 
     /**
@@ -57,26 +79,59 @@ Class Payload
         return false;
     }
 
+    /**
+     * Get Parsed Payload
+     * 
+     * @return Array Payload 
+     */
     public function getPayLoad()
     {
         return $this->payload;
     }
 
+    /**
+     * Sets Coding Standard for PHPCS
+     * 
+     * @param String $standard Standard
+     * 
+     * @return void 
+     */
     public function setCodingStandard($standard)
     {
         $this->standard = $standard;
     }
 
+    /**
+     * Sets source dir to download GIT repository
+     *
+     * @param String $sourceDir Source Dir
+     * 
+     * @return void
+     */
     public function setSourceDir($sourceDir)
     {
         $this->sourceDir = $sourceDir;
     }
 
+    /**
+     * Decodes & Sets Payload from String
+     * 
+     * @param String $payload Github API Payload post string
+     * 
+     * @return void
+     */
     public function setPayLoad($payload)
     {
         $this->payload = ($payload) ? json_decode($payload, true) : false;
     }
 
+    /**
+     * Sets Log Dir
+     * 
+     * @param String $logDir Log Dir
+     * 
+     * @return void
+     */
     public function setLogDir($logDir)
     {
         $this->logDir = $logDir;
@@ -100,16 +155,20 @@ Class Payload
 
     /**
      * Removes source files
+     * Requires SUDO
+     * 
+     * @return void
      */
     public function removeSourceDir()
     {
         if (is_dir($this->sourceDir)) {
-            exec('rm -rf ' . $this->sourceDir);
+            exec($this->SUDO_PATH . ' rm -rf ' . $this->sourceDir);
         }
     }
 
     /**
      * Generates a GIT clone shell command based on the payload
+     * Requires SUDO
      *
      * @return String $command
      */
@@ -117,10 +176,15 @@ Class Payload
     {
         $repositoryUrl = $this->payload['repository']['url'];
         $sshPath = str_replace('https://github.com/', 'git@github.com:', $repositoryUrl);
-        $command = $this->GIT_PATH . ' clone ' . $sshPath . ' ' . $this->sourceDir;
+        $command = $this->SUDO_PATH . ' ' . $this->GIT_PATH . ' clone ' . $sshPath . ' ' . $this->sourceDir;
         return $command;
     }
 
+    /**
+     * Downloads Repository
+     * 
+     * @return void 
+     */
     public function downloadRepository()
     {
         $cmd = $this->getGitCommand();
@@ -172,9 +236,19 @@ Class Payload
         return $output;
     }
 
+    /**
+     * Debug logging (if enabled)
+     * 
+     * @param Mixed  $var    Variable to log
+     * @param String $prefix Prefix for Debug log filename
+     * 
+     * @return void
+     */
     public function debugLog($var, $prefix = '')
     {
-        file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
+        if ($this->_debug) {
+            file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
+        }
     }
 
     /**
@@ -192,11 +266,24 @@ Class Payload
         return $textArray;
     }
 
+    /**
+     * Last Git Commit SHA from Payload
+     * 
+     * @return String Git Commit SHA 
+     */
     public function getCommitId()
     {
         return $this->payload['head_commit']['id'];
     }
 
+    /**
+     * Validates a file against syntax and Coding Standards
+     * Currently only PHP is supported
+     * 
+     * @param String $filename Filename
+     * 
+     * @return Boolean|String True or an Array containing the problem
+     */
     protected function _validateFile($filename)
     {
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
@@ -237,6 +324,11 @@ Class Payload
         return $committer;
     }
 
+    /**
+     * Validates all commits from head
+     * 
+     * @return Boolean|Array True or an Array of Problems
+     */
     public function validateCommits()
     {
         $commit = $this->payload['head_commit'];
@@ -257,6 +349,14 @@ Class Payload
         return $problems;
     }
 
+    /**
+     * Compares a substring with a string from the beginning
+     * 
+     * @param String $haystack Haystack
+     * @param String $needle   Needle to search
+     * 
+     * @return Boolean Result
+     */
     private function _startsWith($haystack, $needle)
     {
         return !strncmp($haystack, $needle, strlen($needle));

@@ -13,9 +13,9 @@ $payload = new Payload();
 $payload->log();
 $payload->downloadRepository();
 $problems = $payload->validateCommits();
-// $payload->removeSourceDir();
+$payload->removeSourceDir();
 
 if ($problems !== true) {
-    // $payload->sendEmail($problems);
+    $payload->sendEmail($problems);
     $payload->debugLog($problems, 'problems-');
 }
