@@ -10,7 +10,6 @@ require_once '3rdparty.lib/SimpleEmailService.class.php';
 require_once 'config.php';
 
 $payload = new Payload();
-$payload->setDebug(true);
 $payload->log();
 $payload->downloadRepository();
 $problems = $payload->validateCommits();
