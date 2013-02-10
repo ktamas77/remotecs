@@ -2,6 +2,8 @@
 
 /**
  * RemoteCS - Convenient Remote Coding Standards Validation
+ * This file should be called via HTTP from GitHub as a Webhook
+ * Make sure the script has rights to run Git
  *
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
@@ -11,7 +13,11 @@ require_once 'config.php';
 
 $payload = new Payload();
 $payload->log();
-$payload->downloadRepository();
+$result = $payload->downloadRepository();
+if (!$result) {
+    $payload->debugLog('Cannot run Git');
+    exit();
+}
 $problems = $payload->validateCommits();
 $payload->removeSourceDir();
 

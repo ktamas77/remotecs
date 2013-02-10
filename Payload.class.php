@@ -183,7 +183,7 @@ Class Payload
     /**
      * Downloads Repository
      * 
-     * @return void 
+     * @return Boolean Success or Failure
      */
     public function downloadRepository()
     {
@@ -191,6 +191,7 @@ Class Payload
         $output = shell_exec($cmd);
         $this->debugLog($cmd);
         $this->debugLog($output);
+        return is_dir($this->sourceDir); 
     }
 
     /**

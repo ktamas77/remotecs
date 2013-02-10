@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 /**
- * GitHub Payload tester
+ * GitHub Command Line Payload tester
  * Outputs a Payload log file in human readable format
  *
  * @author Tamas Kalman <ktamas77@gmail.com>
