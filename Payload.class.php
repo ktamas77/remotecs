@@ -162,7 +162,7 @@ Class Payload
     public function removeSourceDir()
     {
         if (is_dir($this->sourceDir)) {
-            exec($this->SUDO_PATH . ' rm -rf ' . $this->sourceDir);
+            exec($this::SUDO_PATH . ' rm -rf ' . $this->sourceDir);
         }
     }
 
@@ -176,7 +176,7 @@ Class Payload
     {
         $repositoryUrl = $this->payload['repository']['url'];
         $sshPath = str_replace('https://github.com/', 'git@github.com:', $repositoryUrl);
-        $command = $this->SUDO_PATH . ' ' . $this->GIT_PATH . ' clone ' . $sshPath . ' ' . $this->sourceDir;
+        $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' . $sshPath . ' ' . $this->sourceDir;
         return $command;
     }
 
@@ -188,7 +188,7 @@ Class Payload
     public function downloadRepository()
     {
         $cmd = $this->getGitCommand();
-        exec($cmd, $output);
+        $output = shell_exec($cmd);
         $this->debugLog($cmd);
         $this->debugLog($output);
     }
@@ -202,7 +202,7 @@ Class Payload
      */
     protected function _checkSyntax($filename)
     {
-        $cmd = $this->PHP_PATH . ' -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $cmd = $this::PHP_PATH . ' -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
         exec($cmd, $output);
         $this->debugLog($cmd);
         $this->debugLog($output);
@@ -225,7 +225,7 @@ Class Payload
      */
     protected function _checkStandards($filename)
     {
-        $cmd = PHPCS_PATH . ' --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $cmd = $this::PHPCS_PATH . ' --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
         exec($cmd, $output);
         $this->debugLog($cmd);
         $this->debugLog($output);
