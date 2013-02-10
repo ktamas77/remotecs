@@ -183,9 +183,9 @@ Class Payload
     {
         $repositoryUrl = $this->payload['repository']['url'];
         $sshPath = str_replace(
-                'https://github.com/', 
-                'git@github.com:', 
-                $repositoryUrl);
+            'https://github.com/', 
+            'git@github.com:', 
+            $repositoryUrl);
         $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' . 
                 $sshPath . ' ' . $this->sourceDir;
         return $command;
@@ -262,8 +262,10 @@ Class Payload
     public function debugLog($var, $prefix = '')
     {
         if ($this->_debug) {
-            file_put_contents($this->logDir . DIRECTORY_SEPARATOR . $prefix . 
-                    'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND);
+            file_put_contents(
+                $this->logDir . DIRECTORY_SEPARATOR . $prefix .
+                'debug.log', print_r($var, true)."\n\n\n", FILE_APPEND
+            );
         }
     }
 
