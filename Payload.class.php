@@ -185,7 +185,8 @@ Class Payload
         $sshPath = str_replace(
             'https://github.com/', 
             'git@github.com:', 
-            $repositoryUrl);
+            $repositoryUrl
+        );
         $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' . 
                 $sshPath . ' ' . $this->sourceDir;
         return $command;
