@@ -1,7 +1,7 @@
 RemoteCS
 ========
 
-### Convenient Coding Standards Validation
+### Convenient Coding Standards Validation for GitHub
 
 RemoteCS is a remote Coding Standard Validator. Unlike regular CS Validators, it doesn't requires any changes on the client side (no IDE plugin required neither pre-commit-hook setup for GIT).
 No need to set up on every developer's machine, just in one central place.
@@ -9,16 +9,15 @@ No need to set up on every developer's machine, just in one central place.
 ## Features:
 
 * RemoteCS is a GitHub WebHook - Activated after each commit
-* Does PHP Syntax Checking - Standard PHP Lint
-* Supports PHP Codesniffer - The required plugins can be turned on / off
-* Sends E-mail after each commit about the results
+* Currently supports PHP: PHP lint for Syntax Checking and PHPCS for Coding Standards Validation
+* Sends E-mail to the committer after commits about the results (if there is any result)
 
 ## Future directions:
 
 * Send coding standard validation messages as inline comments into the commit to GitHub
 * Multiple language support (Java, Ruby, Python, etc)
+* Give points to the developers based on their code cleaniness & send weekly summary / toplist
 * Web interface
-* Give points to the developers based on their code cleaniness (Weekly summary / toplist)
 
 ### References:
  
