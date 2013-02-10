@@ -25,7 +25,7 @@ No need to set up on every developer's machine, just in one central place.
 * Copy the ```remotecs``` files to your webserver's directory
 * Add the script's HTTP URL to ```Github -> Your Project -> Settings -> Service Hooks -> WebHook URLs```
 * Make sure the path's are correct in the ```Payload.class.php``` file & your webserver has sufficient rights
-* Copy the ```config.sample.php``` into ```config.php``` and set up your Amazon Simple Email Service credentials to receive E-mails
+* Copy the ```config.sample.php``` into ```config.php``` and set up your ```Amazon Simple Email Service``` credentials to receive E-mails
 * Press ```Test Hook``` or Commit & Push files
 * If in trouble, enable debugging by ```$payload->debug(true);``` in ```index.php``` and check the ```debug.log``` file in the log directory
 * Enjoy! =)
