@@ -7,7 +7,7 @@
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
 require_once 'Payload.class.php';
-require_once '3rdparty.lib/ses.php';
+require_once '3rdparty.lib/SimpleEmailService.class.php';
 require_once 'config.php';
 
 $filename = isset($argv[1]) ? $argv[1] : null;
@@ -18,7 +18,12 @@ if (!$filename) {
 }
 
 $payload = new Payload();
-$payload->loadPayloadFromLog($filename);
+$result = $payload->loadPayloadFromLog($filename);
+if ($result === false) {
+    printf("Can't load logfile: [%s]\n", $filename);
+    exit();
+}
+
 $payload->downloadRepository();
 $problems = $payload->validateCommits();
 $payload->removeSourceDir();
@@ -26,5 +31,4 @@ $payload->removeSourceDir();
 if ($problems !== true) {
     $payload->sendEmail($problems);
 }
-
 

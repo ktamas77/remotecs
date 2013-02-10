@@ -6,7 +6,7 @@
  * @author Tamas Kalman <ktamas77@gmail.com>
  */
 require_once 'Payload.class.php';
-require_once '3rdparty.lib/ses.php';
+require_once '3rdparty.lib/SimpleEmailService.class.php';
 require_once 'config.php';
 
 $payload = new Payload();

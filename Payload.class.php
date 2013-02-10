@@ -40,11 +40,18 @@ Class Payload
      * Loads Payload from Logfile from the log directory
      * 
      * @param String $filename Log Filename
+     * 
+     * @return Boolean Result
      */
     public function loadPayloadFromLog($filename)
     {
-        $this->payloadPost = file_get_contents($this->logDir . DIRECTORY_SEPARATOR . $filename);
-        $this->setPayLoad($this->payloadPost);
+        $logFilePath = $this->logDir . DIRECTORY_SEPARATOR . $filename;
+        if (is_file($logFilePath)) {
+            $this->payloadPost = file_get_contents($logFilePath);
+            $this->setPayLoad($this->payloadPost);
+            return true;
+        }
+        return false;
     }
 
     public function getPayLoad()
