@@ -61,7 +61,7 @@ Class Payload
     {
         $this->payloadPost = false;
         if (isset($_POST['payload'])) {
-            $this->payLoadPost = $_POST['payload'];
+            $this->payloadPost = $_POST['payload'];
         }
         $this->setPayLoad($this->payloadPost);
     }
