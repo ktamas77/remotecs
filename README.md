@@ -20,7 +20,15 @@ No need to set up on every developer's machine, just in one central place.
 * Give points to the developers based on their code cleaniness & send weekly summary / toplist
 * Web interface
 
-### Quick Install
+## Prerequisites
+
+* ```PHP```
+* ```GIT```
+* ```PHPCS``` (PEAR/PHP_CodeSniffer)
+* A webserver with sufficient rights to run all of the above
+* Credentials for ```Amazon Simple Email Service``` to receive E-mails
+
+## Quick Install
 
 * Copy the ```remotecs``` files to your webserver's directory
 * Add the script's HTTP URL to ```Github -> Your Project -> Settings -> Service Hooks -> WebHook URLs```
