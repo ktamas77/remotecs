@@ -18,7 +18,7 @@ No need to set up on every developer's machine, just in one central place.
 * Send coding standard validation messages as inline comments into the commit to GitHub
 * Multiple language support (Java, Ruby, Python, etc)
 * Web interface
-* Give points to the developers based on their code cleaniness
+* Give points to the developers based on their code cleaniness (Weekly summary / toplist)
 
 ### References:
  
