@@ -10,6 +10,9 @@
  */
 Class Payload
 {
+    const GIT_PATH = '/usr/bin/git';
+    const PHP_PATH = '/usr/bin/php';
+    const PHPCS_PATH = '/usr/bin/phpcs';
 
     var $payloadPost;
     var $payload;
@@ -113,9 +116,8 @@ Class Payload
     public function getGitCommand()
     {
         $repositoryUrl = $this->payload['repository']['url'];
-        $projectPath = str_replace('https://github.com/', '', $repositoryUrl);
-        $sshPath = 'git@github.com:' . $projectPath;
-        $command = '/usr/bin/git clone ' . $sshPath . ' ' . $this->sourceDir;
+        $sshPath = str_replace('https://github.com/', 'git@github.com:', $repositoryUrl);
+        $command = $this->GIT_PATH . ' clone ' . $sshPath . ' ' . $this->sourceDir;
         return $command;
     }
 
@@ -136,7 +138,7 @@ Class Payload
      */
     protected function _checkSyntax($filename)
     {
-        $cmd = '/usr/bin/php -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $cmd = $this->PHP_PATH . ' -l ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
         exec($cmd, $output);
         $this->debugLog($cmd);
         $this->debugLog($output);
@@ -159,7 +161,7 @@ Class Payload
      */
     protected function _checkStandards($filename)
     {
-        $cmd = '/usr/bin/phpcs --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
+        $cmd = PHPCS_PATH . ' --standard=' . $this->standard . ' ' . $this->sourceDir . DIRECTORY_SEPARATOR . $filename;
         exec($cmd, $output);
         $this->debugLog($cmd);
         $this->debugLog($output);
