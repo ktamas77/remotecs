@@ -187,7 +187,8 @@ Class Payload
             'git@github.com:', 
             $repositoryUrl
         );
-        $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' . 
+        $command = $this::SUDO_PATH . ' ' . $this::GIT_PATH . ' clone ' .
+                ' -b ' . $this->getBranchName() . ' ' .
                 $sshPath . ' ' . $this->sourceDir;
         return $command;
     }
@@ -293,6 +294,19 @@ Class Payload
     public function getCommitId()
     {
         return $this->payload['head_commit']['id'];
+    }
+
+    /**
+     * Returns with the branch name which was used during last commit
+     * 
+     * @return String Branch name
+     */
+    public function getBranchName()
+    {
+        $ref = $this->payload['ref'];
+        $refParts = explode('/', $ref);
+        $lastRef = end($refParts);
+        return $lastRef;
     }
 
     /**
