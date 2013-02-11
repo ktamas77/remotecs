@@ -9,7 +9,7 @@ No need to set up on every developer's machine, just in one central place.
 ## Features:
 
 * ```RemoteCS``` is a ```GitHub WebHook``` - Activated after each commit
-* Scans the newly added and the modified files after each commit (not the entire repository)
+* Scans the newly added and the modified files after each commit (not the entire repository) on the committed branch
 * Currently supports ```PHP```: ```PHP lint``` for Syntax Checking and ```PHPCS``` for Coding Standards Validation
 * Sends E-mail to the committer after commits about the results (if there is any result)
 
