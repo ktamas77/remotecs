@@ -15,6 +15,7 @@ No need to set up on every developer's machine, just in one central place.
 
 ## Future directions:
 
+* Scan for ignore list file in each repository (example: ```/.remotecs-ignore```)
 * Send coding standard validation messages as inline comments into the commit to GitHub
 * Multiple language support (```Java```, ```Ruby```, ```Python```, etc)
 * Give points to the developers based on their code cleaniness & send weekly summary / toplist
