@@ -31,7 +31,10 @@ No need to set up on every developer's machine, just in one central place.
 
 ## Quick Install
 
-* Copy the ```remotecs``` files to your webserver's directory
+* Copy the ```remotecs``` files to your webserver's directory or use composer to install:
+```
+composer require ktamas77/remotecs
+```
 * Add the script's HTTP URL to ```Github -> Your Project -> Settings -> Service Hooks -> WebHook URLs```
 * Make sure the path's are correct in the ```Payload.class.php``` file & your webserver has sufficient rights
 * Copy the ```config.sample.php``` into ```config.php``` and set up your ```Amazon Simple Email Service``` credentials to receive E-mails
